@@ -51,9 +51,9 @@ extension AVCompositionService {
         outputSize: CGSize,
         instructions: inout [AVMutableVideoCompositionInstruction]
     ) async throws -> CMTime {
-        let avAsset = try await loadAVAsset(identifier: clip.assetIdentifier)
-        let duration = clip.timeRange.duration
-        let insertRange = clip.timeRange
+        let avAsset = try await loadAVAsset(identifier: clip.assetLocalIdentifier)
+        let duration = clip.duration
+        let insertRange = CMTimeRange(start: clip.startTime, duration: clip.duration)
 
         if let sourceVideoTrack = try await avAsset.loadTracks(
             withMediaType: .video

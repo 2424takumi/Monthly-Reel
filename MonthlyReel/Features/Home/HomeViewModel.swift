@@ -35,12 +35,12 @@ final class HomeViewModel {
 
     /// Kicks off asynchronous reel generation for the current month.
     func startGeneration() {
-        guard case .idle = appState.generationStatus else { return }
-        guard case .failed = appState.generationStatus else {
+        switch appState.generationStatus {
+        case .idle, .failed:
             beginGeneration()
+        default:
             return
         }
-        beginGeneration()
     }
 
     /// Cancels any in-flight generation work and resets to idle.
@@ -68,7 +68,17 @@ private extension HomeViewModel {
                     }
                 }
                 try Task.checkCancellation()
-                try await self.videoArchiveRepository.save(result)
+                let reel = MonthlyReelModel(
+                    year: self.currentMonth.year,
+                    month: self.currentMonth.month
+                )
+                reel.videoURL = result.videoURL
+                reel.thumbnailData = result.thumbnailData
+                reel.duration = result.duration
+                reel.clipCount = result.clipCount
+                reel.sourceVideoCount = result.sourceVideoCount
+                reel.appliedPreset = self.selectedPreset.rawValue
+                try self.videoArchiveRepository.save(reel: reel)
                 self.appState.generationStatus = .completed(
                     videoURL: result.videoURL,
                     thumbnailData: result.thumbnailData,

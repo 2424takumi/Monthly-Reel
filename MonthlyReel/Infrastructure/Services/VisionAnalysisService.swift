@@ -6,15 +6,7 @@ import OSLog
 
 /// Analyzes video frames for sharpness, brightness, and face presence.
 /// Uses Vision, Core Image, and AVAssetImageGenerator under the hood.
-final class VisionAnalysisService {
-
-    // MARK: - Types
-
-    struct AnalysisResult {
-        let sharpness: Double   // 0.0 - 1.0
-        let brightness: Double  // 0.0 - 1.0
-        let hasFace: Bool
-    }
+final class VisionAnalysisService: VisionAnalysisServiceProtocol {
 
     // MARK: - Constants
 
@@ -32,8 +24,9 @@ final class VisionAnalysisService {
 
     // MARK: - Public API
 
-    func analyze(asset: PHAsset) async throws -> AnalysisResult {
-        let avAsset = try await loadAVAsset(from: asset)
+    func analyze(asset: any VideoAssetProtocol) async throws -> AnalysisResult {
+        let phAsset = try resolvePHAsset(from: asset)
+        let avAsset = try await loadAVAsset(from: phAsset)
         let cgImage = try await extractFirstFrame(from: avAsset)
 
         async let sharpnessResult = computeSharpness(from: cgImage)
@@ -47,22 +40,46 @@ final class VisionAnalysisService {
         )
     }
 
-    func analyzeAll(assets: [PHAsset]) async throws -> [PHAsset: AnalysisResult] {
+    func analyzeAll(
+        assets: [any VideoAssetProtocol]
+    ) async throws -> [String: AnalysisResult] {
         try await withThrowingTaskGroup(
-            of: (PHAsset, AnalysisResult).self
+            of: (String, AnalysisResult).self
         ) { group in
             for asset in assets {
+                let identifier = asset.localIdentifier
                 group.addTask {
                     let result = try await self.analyze(asset: asset)
-                    return (asset, result)
+                    return (identifier, result)
                 }
             }
-            var results: [PHAsset: AnalysisResult] = [:]
-            for try await (asset, result) in group {
-                results[asset] = result
+            var results: [String: AnalysisResult] = [:]
+            for try await (identifier, result) in group {
+                results[identifier] = result
             }
             return results
         }
+    }
+}
+
+// MARK: - Asset Resolution
+
+extension VisionAnalysisService {
+
+    private func resolvePHAsset(
+        from asset: any VideoAssetProtocol
+    ) throws -> PHAsset {
+        if let phAsset = asset as? PHAsset {
+            return phAsset
+        }
+        let fetchResult = PHAsset.fetchAssets(
+            withLocalIdentifiers: [asset.localIdentifier],
+            options: nil
+        )
+        guard let phAsset = fetchResult.firstObject else {
+            throw AppError.sceneSelectionFailed
+        }
+        return phAsset
     }
 }
 

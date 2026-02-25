@@ -5,28 +5,7 @@ import OSLog
 
 /// Composes multiple video clips into a single reel and exports to disk.
 /// Also provides thumbnail generation from exported videos.
-final class AVCompositionService {
-
-    // MARK: - Types
-
-    enum ExportQuality {
-        case standard  // 720p
-        case high      // 1080p
-
-        var size: CGSize {
-            switch self {
-            case .standard: return CGSize(width: 1280, height: 720)
-            case .high:     return CGSize(width: 1920, height: 1080)
-            }
-        }
-
-        var videoBitRate: Int {
-            switch self {
-            case .standard: return 2_500_000
-            case .high:     return 8_000_000
-            }
-        }
-    }
+final class AVCompositionService: AVCompositionServiceProtocol {
 
     // MARK: - Constants
 

@@ -2,16 +2,6 @@ import SwiftData
 import Foundation
 import OSLog
 
-/// Abstraction for persisting and retrieving monthly reel records.
-/// Uses SwiftData for metadata and FileManager for associated video/thumbnail files.
-protocol VideoArchiveRepositoryProtocol {
-    func save(reel: MonthlyReelModel) throws
-    func fetch(year: Int, month: Int) throws -> MonthlyReelModel?
-    func fetchAll() throws -> [MonthlyReelModel]
-    func delete(reel: MonthlyReelModel) throws
-    func deleteAll() throws
-}
-
 /// Concrete SwiftData-backed implementation.
 final class VideoArchiveRepository: VideoArchiveRepositoryProtocol {
 

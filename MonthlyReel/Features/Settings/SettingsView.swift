@@ -1,8 +1,7 @@
 import SwiftUI
 import Photos
 
-/// App settings screen with photo library status, quality picker,
-/// data management, and version information.
+/// App settings screen with photo library status, quality picker, data management, and version info.
 struct SettingsView: View {
     @State private var selectedQuality: ExportQuality = {
         let raw = UserDefaults.standard.string(forKey: "reelQuality") ?? "standard"
@@ -197,20 +196,5 @@ private extension SettingsView {
         let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String
         let build = Bundle.main.infoDictionary?["CFBundleVersion"] as? String
         return "\(version ?? "1.0") (\(build ?? "1"))"
-    }
-}
-
-// MARK: - ExportQuality
-
-/// Video export quality options stored in UserDefaults.
-enum ExportQuality: String, CaseIterable {
-    case standard
-    case high
-
-    var displayName: String {
-        switch self {
-        case .standard: return "標準 (720p)"
-        case .high: return "高品質 (1080p)"
-        }
     }
 }

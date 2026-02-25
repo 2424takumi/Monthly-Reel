@@ -1,13 +1,6 @@
 import Photos
 import OSLog
 
-/// Abstraction for camera roll access via PhotoKit.
-/// Consumed by use cases; never imported by views directly.
-protocol PhotoLibraryRepositoryProtocol {
-    func requestAuthorization() async -> PHAuthorizationStatus
-    func fetchVideos(in month: YearMonth) async throws -> [PHAsset]
-}
-
 /// Concrete PhotoKit-backed implementation.
 final class PhotoLibraryRepository: PhotoLibraryRepositoryProtocol {
 

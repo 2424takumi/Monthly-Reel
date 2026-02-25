@@ -2,35 +2,6 @@ import Foundation
 import Photos
 import OSLog
 
-/// Callback for progress updates during reel generation.
-typealias ProgressCallback = @Sendable (GenerationStatus) -> Void
-
-/// Represents the current phase and progress of reel generation.
-enum GenerationStatus: Sendable {
-    case idle
-    case scanning(progress: Double)
-    case selecting(progress: Double)
-    case compositing(progress: Double)
-    case grading(progress: Double)
-    case completed(
-        videoURL: URL,
-        thumbnailData: Data,
-        clipCount: Int,
-        sourceVideoCount: Int,
-        duration: Double
-    )
-    case failed(error: AppError)
-}
-
-/// Result returned upon successful reel generation.
-struct GenerationResult: Sendable {
-    let videoURL: URL
-    let thumbnailData: Data
-    let clipCount: Int
-    let sourceVideoCount: Int
-    let duration: Double
-}
-
 /// Main pipeline orchestrator for monthly reel generation.
 /// Coordinates four phases: scan, select, composite, and grade.
 final class VideoGenerationUseCase {
@@ -139,24 +110,3 @@ final class VideoGenerationUseCase {
         return gradedURL
     }
 }
-
-// MARK: - ExportQuality
-
-/// Video export quality levels.
-enum ExportQuality: String, Sendable {
-    case standard
-    case high
-}
-
-// MARK: - AVCompositionServiceProtocol
-
-/// Protocol for the composition service, enabling test mocks.
-protocol AVCompositionServiceProtocol {
-    func compose(
-        clips: [SelectedClip],
-        quality: ExportQuality
-    ) async throws -> URL
-
-    func generateThumbnail(from videoURL: URL) async throws -> Data
-}
-

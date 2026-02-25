@@ -16,39 +16,6 @@ enum Constants {
         }
     }
 
-    enum ExportQuality {
-        case standard  // 720p
-        case high      // 1080p
-
-        var width: Int {
-            switch self {
-            case .standard: return 1280
-            case .high:     return 1920
-            }
-        }
-
-        var height: Int {
-            switch self {
-            case .standard: return 720
-            case .high:     return 1080
-            }
-        }
-
-        var videoBitRate: Int {
-            switch self {
-            case .standard: return 2_500_000
-            case .high:     return 8_000_000
-            }
-        }
-
-        var audioBitRate: Int {
-            switch self {
-            case .standard: return 128_000
-            case .high:     return 192_000
-            }
-        }
-    }
-
     enum Storage {
         static let reelsDirectory = "Reels"
         static let thumbnailsDirectory = "Thumbnails"
