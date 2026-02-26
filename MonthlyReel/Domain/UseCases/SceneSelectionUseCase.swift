@@ -2,16 +2,6 @@ import Photos
 import CoreMedia
 import OSLog
 
-/// Protocol that abstracts PHAsset for testability.
-/// Both PHAsset and mock objects conform to this protocol.
-protocol VideoAssetProtocol {
-    var localIdentifier: String { get }
-    var duration: TimeInterval { get }
-    var creationDate: Date? { get }
-}
-
-extension PHAsset: VideoAssetProtocol {}
-
 /// Evaluates videos and selects the best clips for a monthly reel.
 /// Uses Vision-based analysis to score each video by sharpness,
 /// brightness, face presence, and duration.
